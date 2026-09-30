@@ -1,0 +1,44 @@
+.default-bg{
+	background-color: rgb(193, 197, 167);
+	padding-left: 25vw;
+	margin: 0px;
+	display: flex;
+	justify-content: center;
+	position: absolute;
+}
+
+.content-bg{
+	margin-left: 50vw;
+	width: 90vw;
+	min-height: 100vh;
+	height: fit-content;
+	overflow: scroll;
+	background-color: rgb(122, 88, 88);
+	justify-content: initial;
+	display: inherit;
+	position: inherit;
+}
+
+.sidebar-bg{
+	width: 14rem;
+	height: 400px;
+	overflow: scroll;
+	background-color: rgb(203, 203, 203);
+	margin-top: 10px;
+	margin-left: 10px;
+	z-index: 1;
+	flex-flow: column;
+	justify-content: flex-start;
+	display: inherit;
+	position: fixed;
+}
+.sidebar-child{
+	padding: 5px;
+	align-self: center;
+	position: initial;
+	margin-top: 10px;
+	width: 90%;
+	background-color: rgb(148, 148, 148);
+	flex-direction: column;
+	display: inherit;
+}

@@ -10,3 +10,11 @@
 .sitemap-list>div{
 	white-space: preserve;
 }
+
+#graph{
+	position: fixed;
+	margin-left: 20vw;
+	margin-top: 1vw;
+	background: white;
+	width: 60%;
+}

@@ -16,7 +16,7 @@
             <div class="site-map-bg  sidebar-child ">
                 <div class="sidebar-child-title">Período</div>
                 <div class="sitemap-list sidebar-subitem">
-                        <div id="sitemap-entry">De: <select>[xxxx]</select> a <select>[xxxx]</select></div>
+                        <div id="sitemap-entry">De: <select><option>2012</option></select> a <select><option>2026</option></select></div>
                 </div>
             </div>
             <div class="site-map-bg  sidebar-child ">
@@ -38,6 +38,39 @@
                     <div class="sitemap-list sidebar-subitem"></div>
         </div>
 </div>
+<div id="graph">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!--Adicionar a lista de coisas utilizadas.-->
+
+  <script>
+    fetch('/test')
+    .then(function (response) { return response.json()})
+    .then(function (json){
+        console.log(json)
+    })
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['2021', '2024', '2025', '2026'], //Anos
+        datasets: [{
+            label:"População",
+            data: [1, , 4, 2], //População
+            borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
 
     </div>
 </body></html>

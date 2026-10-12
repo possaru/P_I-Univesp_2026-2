@@ -17,12 +17,27 @@ app.get(['/home'], (req, res) =>{
 })
 
 app.get('/test', (req, res)=>{
-    const python = spawn('python', ['python/main.py']) //Incompleto
+    var result
+    const cidade = req.query.cidade
 
-    result=[]
-    result[0]='test'
-    res.send(result)
-    res.end()
+    const pychild = spawn('/bin/python3', ['python/main.py', cidade],{
+        serialization:'json'
+    })
+
+    pychild.stdout.on('data', (data) =>{
+        var str = JSON.parse(data.toString())
+        console.log(str)
+        result=str
+    })
+
+    pychild.on('exit', ()=>{
+        res.send(result)
+        res.end()
+    })
+
+    pychild.stderr.on('data', (data)=>{
+        console.error(`stderr: ${data}`)
+    })
 })
 
 app.listen(port, () =>

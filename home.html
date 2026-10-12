@@ -45,31 +45,63 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!--Adicionar a lista de coisas utilizadas.-->
 
   <script>
-    fetch('/test')
-    .then(function (response) { return response.json()})
-    .then(function (json){
-        console.log(json)
-    })
-    const ctx = document.getElementById('myChart');
+    var graph_data
+    (async ()=>{
+      await fetch('/test?cidade=Bertioga,Santos,Guarujá')
+      .then(function (response) { return response.json()})
+      .then(function (json){
+          console.log(json)
+          graph_data=json
+      })
 
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['2021', '2024', '2025', '2026'], //Anos
-        datasets: [{
-            label:"População",
-            data: [1, , 4, 2], //População
-            borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
+      graph_datasets=[
+        //--referencia--
+        // {
+        //       label:"População",
+        //       data: [1, 3, 4, 2], //População
+        //       borderWidth: 1
+        //     }
+          ];
+
+      year_counter=graph_data.years[0]
+      for (let i=0; i<=graph_data.years.toReversed()[0]-graph_data.years[0]; i++){
+        let city_counter=0;
+        for (let city in graph_data.cidades){
+          var população= graph_data.cidades[city][year_counter]
+          if (população==undefined){continue}
+          console.log(city,'--',year_counter,' -- ',graph_data.cidades[city][year_counter])
+          if(i==0){
+            graph_datasets.push({
+              label:city,
+              data:[população],
+              borderWidth: 1
+            })
+          }
+          else{
+            graph_datasets[city_counter]["data"].push(população)
+          }
+          city_counter++
+        }
+        year_counter++
+      }
+
+      const ctx = document.getElementById('myChart');
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: graph_data.years, //Anos
+          datasets:graph_datasets
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
           }
         }
-      }
-    });
+      })
+    })();
   </script>
 
     </div>

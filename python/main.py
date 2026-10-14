@@ -9,10 +9,14 @@ state_name=''
 time_range_start=0
 time_range_end=0
 
-try:state_name=sys.argv[2]
-except:state_name="SP"
 try:city_name=sys.argv[1].split(",")
 except:city_name=['Bertioga',"Santos"]
+try:state_name=sys.argv[2]
+except:state_name="SP"
+try:time_range_start=int(sys.argv[3])
+except:time_range_start=0
+try:time_range_end=int(sys.argv[4])
+except:time_range_end=0
 
 parsed={
 	'cidades':{},
@@ -22,13 +26,17 @@ for city in city_name:
 	parsed['cidades'][city]={}
 
 for filename in sorted(os.listdir(os.path.join(dirname,'../data/original/csv'))):
-	df = pandas.read_csv('data/original/csv/'+filename,sep=',')
-
 	year=''
 	for l in filename:
 		if(l.isnumeric()):
 			year+=l
-	parsed['years'].append(int(year))
+	year=int(year)
+	if(year<time_range_start or year>time_range_end and time_range_end!=0):
+		continue
+
+	df = pandas.read_csv('data/original/csv/'+filename,sep=',')
+
+	parsed['years'].append(year)
 
 	for city in city_name:
 		try:

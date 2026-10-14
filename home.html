@@ -16,21 +16,14 @@
             <div class="site-map-bg  sidebar-child ">
                 <div class="sidebar-child-title">Período</div>
                 <div class="sitemap-list sidebar-subitem">
-                        <div id="sitemap-entry">De: <select><option>2012</option></select> a <select><option>2026</option></select></div>
+                        <div id="sitemap-entry">De: <input autocomplete="off" type="number" placeholder="1992" style="width: 60px;" id="time_range_start"></input> a <input autocomplete="off" type="number" placeholder="2026" style="width: 60px;" id="time_range_end"></input></div>
                 </div>
             </div>
             <div class="site-map-bg  sidebar-child ">
                 <div class="sidebar-child-title">Cidade(s)</div>
-                <div>
-                    <input type="checkbox">[Selecionar Tudo]
+                <div id="checkbox_container">
+                    <button type="button" id="select_all" value="false">[Selecionar Tudo]</button>
                     <hr>
-                    <input type="checkbox">Bertioga
-                    <br>
-                    <input type="checkbox">Santos
-                    <br>
-                    <input type="checkbox">Guarujá
-                    <br>
-                    <input type="checkbox">[...]
                 </div>
             </div>
             <div class="site-map-bg  sidebar-child ">
@@ -42,66 +35,121 @@
     <canvas id="myChart"></canvas>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!--Adicionar a lista de coisas utilizadas.-->
+  <script src="/js/chart.js"></script> <!--Adicionar à lista de coisas utilizadas. - https://www.chartjs.org/-->
 
   <script>
-    var graph_data
-    (async ()=>{
-      await fetch('/test?cidade=Bertioga,Santos,Guarujá')
-      .then(function (response) { return response.json()})
-      .then(function (json){
-          console.log(json)
-          graph_data=json
+
+    city_list=['Bertioga','Santos','Guarujá','Praia Grande']
+
+    document.getElementById("time_range_start").addEventListener('change',()=>{
+      fetch_graph()
+    })
+    document.getElementById("time_range_end").addEventListener('change',()=>{
+      fetch_graph()
+    })
+
+    for(let i=0; i<city_list.length;i++){
+      toInsert=`<div><label><input id="city_checkbox_${i}" class="city_checkbox" value="${city_list[i]}" type="checkbox">${city_list[i]}</label></div>`
+      document.getElementById('checkbox_container').insertAdjacentHTML('beforeend',toInsert)
+
+      document.getElementById(`city_checkbox_${i}`).addEventListener('change',()=>{
+        fetch_graph()
       })
+    }
+    document.getElementById("select_all").addEventListener('click',()=>{
+      let check = (document.getElementById('select_all').value=='false') ? true : false
 
-      graph_datasets=[
-        //--referencia--
-        // {
-        //       label:"População",
-        //       data: [1, 3, 4, 2], //População
-        //       borderWidth: 1
-        //     }
-          ];
-
-      year_counter=graph_data.years[0]
-      for (let i=0; i<=graph_data.years.toReversed()[0]-graph_data.years[0]; i++){
-        let city_counter=0;
-        for (let city in graph_data.cidades){
-          var população= graph_data.cidades[city][year_counter]
-          if (população==undefined){continue}
-          console.log(city,'--',year_counter,' -- ',graph_data.cidades[city][year_counter])
-          if(i==0){
-            graph_datasets.push({
-              label:city,
-              data:[população],
-              borderWidth: 1
-            })
-          }
-          else{
-            graph_datasets[city_counter]["data"].push(população)
-          }
-          city_counter++
-        }
-        year_counter++
+      for(let i=0; i<document.getElementsByClassName('city_checkbox').length;i++){
+        document.getElementById(`city_checkbox_${i}`).checked = check
+        document.getElementById('select_all').value = check
       }
+      fetch_graph()
+      }
+    )
 
-      const ctx = document.getElementById('myChart');
 
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: graph_data.years, //Anos
-          datasets:graph_datasets
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
+
+    var graph_data
+    var chart_id=0
+
+    async function fetch_graph(){
+      (async ()=>{
+        range_start=document.getElementById('time_range_start').value
+        range_end=document.getElementById('time_range_end').value
+
+        var query = `/graph?`
+        query += `range_start=${range_start}&`
+        query += `range_end=${range_end}&`
+        query += `cidade=`
+        for(let i=0;i<city_list.length;i++){
+          if(document.getElementById(`city_checkbox_${i}`).checked){
+            console.log(document.getElementById(`city_checkbox_${i}`).value)
+            query+=`${document.getElementById(`city_checkbox_${i}`).value},`
+          }
+        }
+
+        await fetch(`${query}`)
+
+        .then(function (response) { return response.json()})
+        .then(function (json){
+            graph_data=json
+        })
+
+        graph_datasets=[
+          //--referencia de formatação--
+          // {
+          //       label:"População",
+          //       data: [1, 3, 4, 2], //População
+          //       borderWidth: 1
+          //     }
+            ];
+
+        year_counter=graph_data.years[0]
+        for (let i=0; i<=graph_data.years.toReversed()[0]-graph_data.years[0]; i++){
+          let city_counter=0;
+          for (let city in graph_data.cidades){
+            var população= graph_data.cidades[city][year_counter]
+            if (população==undefined){continue}
+            if(i==0){
+              graph_datasets.push({
+                label:city,
+                data:[população],
+                borderWidth: 1
+              })
+            }
+            else{
+              graph_datasets[city_counter]["data"].push(população)
+            }
+            city_counter++
+          }
+          year_counter++
+        }
+
+        const ctx = document.getElementById('myChart');
+
+        try{
+          Chart.instances[chart_id].destroy()
+          chart_id++
+        }
+        catch{}
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: graph_data.years, //Anos
+            datasets:graph_datasets
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: false
+              }
             }
           }
-        }
-      })
-    })();
+        })
+      })();
+    }
+    fetch_graph();
   </script>
 
     </div>

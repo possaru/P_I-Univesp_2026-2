@@ -16,11 +16,15 @@ app.get(['/home'], (req, res) =>{
     res.end();
 })
 
-app.get('/test', (req, res)=>{
+app.get('/graph', (req, res)=>{
     var result
     const cidade = req.query.cidade
+    const estado = "SP"
+    const time_range_start = parseInt(req.query.range_start)
+    const time_range_end = parseInt(req.query.range_end)
+    console.log(`${cidade}\n${time_range_start}\n${time_range_end}`)
 
-    const pychild = spawn('/bin/python3', ['python/main.py', cidade],{
+    const pychild = spawn('/bin/python3', ['python/main.py', cidade, estado, time_range_start, time_range_end],{
         serialization:'json'
     })
 

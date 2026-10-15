@@ -10,7 +10,8 @@
             <div class="site-map-bg  sidebar-child ">
                     <div class="sidebar-child-title">Projeto</div>
                     <div class="sitemap-list sidebar-subitem">
-							<div id="sitemap-entry">[<a href="http://localhost:9000/home">Início</a>]</div>
+							<div id="sitemap-entry">[<a href="/home">Gráfico Populacional</a>]</div>
+              <div id="sitemap-entry">[<a href="/map">Mapa Regional</a>]</div>
 					</div>
 			</div>
             <div class="site-map-bg  sidebar-child ">
@@ -26,14 +27,10 @@
                     <hr>
                 </div>
             </div>
-            <div class="site-map-bg  sidebar-child ">
-                    <div class="sidebar-child-title">Legenda</div>
-                    <div class="sitemap-list sidebar-subitem"></div>
-        </div>
+        <div id="graph">
+            <canvas id="myChart"></canvas>
+          </div>
 </div>
-<div id="graph">
-    <canvas id="myChart"></canvas>
-  </div>
 
   <script src="/js/chart.js"></script> <!--Adicionar à lista de coisas utilizadas. - https://www.chartjs.org/-->
 

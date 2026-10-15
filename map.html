@@ -1,0 +1,128 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="./general.css">
+    <link rel="stylesheet" type="text/css" href="./backgrounds.css">
+    <meta charset="UTF-8">
+</head>
+
+<body class="default-bg ">
+    <div class=" content-bg "><div class="sidebar-bg">
+            <div class="site-map-bg  sidebar-child ">
+                    <div class="sidebar-child-title">Projeto</div>
+                    <div class="sitemap-list sidebar-subitem">
+							<div id="sitemap-entry">[<a href="http://localhost:9000/home">Gráfico Populacional</a>]</div>
+              <div id="sitemap-entry">[<a href="http://localhost:9000/map">Mapa Regional</a>]</div>
+					</div>
+			</div>
+            <div class="site-map-bg  sidebar-child ">
+                <div class="sidebar-child-title">Período</div>
+                <div class="sitemap-list sidebar-subitem">
+                        <div id="sitemap-entry">De: <input autocomplete="off" type="number" placeholder="1992" style="width: 60px;" id="time_range_start"></input> a <input autocomplete="off" type="number" placeholder="2026" style="width: 60px;" id="time_range_end"></input></div>
+                </div>
+            </div>
+            <div class="site-map-bg  sidebar-child ">
+                <div class="sidebar-child-title">Cidade(s)</div>
+                <div id="checkbox_container">
+                    <!-- <button type="button" id="select_all" value="false">[Selecionar Tudo]</button> -->
+                    <hr>
+                </div>
+                <div class="sidebar-child-title">Controles</div>
+                <div>
+                  <<<input type="radio" id="back_button" class="dir_button" name="direction" >--Direção--<input type="radio" id="forth_button" class="dir_button" name="direction"  checked="true">>>
+                </div>
+            </div>
+          </div>
+          <!-- <div id="map_container" style="margin-left: 25vw; margin-top: 5%"></div> -->
+           </div>
+
+  <script>
+
+    city_list=['Bertioga']
+
+    document.getElementById("time_range_start").addEventListener('change',()=>{
+      fetch_graph()
+    })
+    document.getElementById("time_range_end").addEventListener('change',()=>{
+      fetch_graph()
+    })
+    document.getElementById('back_button').addEventListener('click',()=>{
+      document.getElementById('map_container').value=0
+      fetch_graph();
+    })
+    document.getElementById('forth_button').addEventListener('click',()=>{
+      document.getElementById('map_container').value=0
+      fetch_graph();
+    })
+
+
+    for(let i=0; i<city_list.length;i++){
+      toInsert=`<div><label><input id="city_checkbox_${i}" class="city_checkbox" value="${city_list[i]}" type="checkbox">${city_list[i]}</label></div>`
+      document.getElementById('checkbox_container').insertAdjacentHTML('beforeend',toInsert)
+
+      document.getElementById(`city_checkbox_${i}`).addEventListener('change',()=>{
+        fetch_graph()
+      })
+    }
+    async function fetch_graph(){
+      (async ()=>{
+        range_start=document.getElementById('time_range_start').value
+        range_end=document.getElementById('time_range_end').value
+
+        var query = `/mapdata?`
+        query += `range_start=${range_start}&`
+        query += `range_end=${range_end}&`
+        query += `cidade=`
+        for(let i=0;i<city_list.length;i++){
+          if(document.getElementById(`city_checkbox_${i}`).checked){
+            console.log(document.getElementById(`city_checkbox_${i}`).value)
+            query+=`${document.getElementById(`city_checkbox_${i}`).value}`
+          }
+        }
+
+        await fetch(`${query}`)
+        .then(function (response) { return response.json()})
+        .then(async function (json){
+            map_data=json
+            console.log(map_data['years'])
+            try{document.getElementById('map_container').remove()}
+            catch{}
+            document.getElementsByClassName('content-bg')[0].insertAdjacentHTML('beforeend',`<div id="map_container" style="margin-left: 25vw; margin-top: 5%"></div>`)
+            document.getElementById('map_container').value=1
+
+            for(let i = 0; i < map_data['years'].length; i++){
+              position=(document.getElementById('back_button').checked==true) ? 'afterbegin' : 'beforeend'
+              document.getElementById('map_container').insertAdjacentHTML(position,`<img class="map_images" style="overflow:hidden visibility: hidden" src="data/map/Bertioga/original/${map_data.years[i]}.jpg">`)
+            }
+
+        })
+        .then(()=>{timelapse()})
+      })();
+    }
+    fetch_graph();
+    async function timelapse(){
+      elements=document.getElementsByClassName('map_images')
+      lapse_direction='back'
+      lapse_speed=50
+
+      while (document.getElementById('map_container').value==1){
+        for(let i=0; i<elements.length; i++){
+          elements[i].style.visibility='visible'
+          await sleep(lapse_speed)
+        }
+        for(let i=1; i<elements.length; i++){
+          elements[i].style.visibility='hidden'
+        }
+        await sleep(20)
+      }
+      console.log('stop')
+      document.getElementById('map_container').value=1
+      return
+    }
+
+    function sleep(ms){
+      return new Promise(resolve => setTimeout(resolve, ms))
+    }
+  </script>
+
+    </div>
+</body></html>

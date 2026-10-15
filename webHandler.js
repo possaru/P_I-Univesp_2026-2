@@ -10,13 +10,14 @@ app.use(express.static('./'));
 
 app.get('/', (req, res) => {res.redirect("/home")});
 
-app.get(['/home'], (req, res) =>{
+app.get(['/home','/map'], (req, res) =>{
     res.writeHead(200, "success", { "content-type": 'text/html' });
     res.write(fs.readFileSync(`./${req.url}.html`));
     res.end();
 })
 
-app.get('/graph', (req, res)=>{
+app.get(['/graph','/mapdata'], (req, res)=>{
+    console.log(req.url)
     var result
     const cidade = req.query.cidade
     const estado = "SP"
@@ -24,7 +25,8 @@ app.get('/graph', (req, res)=>{
     const time_range_end = parseInt(req.query.range_end)
     console.log(`${cidade}\n${time_range_start}\n${time_range_end}`)
 
-    const pychild = spawn('/bin/python3', ['python/main.py', cidade, estado, time_range_start, time_range_end],{
+    script=(req.url.includes('/mapdata')) ? 'python/map.py' : 'python/main.py'
+    const pychild = spawn('/bin/python3', [script, cidade, estado, time_range_start, time_range_end],{
         serialization:'json'
     })
 

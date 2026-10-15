@@ -18,3 +18,8 @@
 	background: white;
 	width: 60%;
 }
+
+.map_images{
+	width: 64%;
+	position: fixed;
+}

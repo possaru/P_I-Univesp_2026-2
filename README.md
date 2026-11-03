@@ -1,12 +1,12 @@
-Instalação
-Requisitos:
+Instalação<br>
+Requisitos:<br>
   -http://nodejs.org/pt-br/download
-  -https://www.python.org/downloads/
-      -biblioteca Pandas
+  <br>-https://www.python.org/downloads/
+      <br>-biblioteca Pandas
 
-"npm install" no diretório com webhandler.js
-"npm audit fix"
-"pip install pandas"
-"node webhandler.js"
-
-Acesse "localhost:9000" no navegador.
+<br>"npm install" no diretório com webhandler.js
+<br>"npm audit fix"
+<br>"pip install pandas"
+<br>"node webhandler.js"
+<br>
+<br>Acesse "localhost:9000" no navegador.

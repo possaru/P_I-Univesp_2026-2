@@ -26,7 +26,16 @@ app.get(['/graph','/mapdata'], (req, res)=>{
     console.log(`${cidade}\n${time_range_start}\n${time_range_end}`)
 
     script=(req.url.includes('/mapdata')) ? 'python/map.py' : 'python/main.py'
-    const pychild = spawn('/bin/python3', [script, cidade, estado, time_range_start, time_range_end],{
+    let pypath;
+
+    console.log('checking: "/bin/python3"')
+    if(fs.existsSync('/bin/python3')){
+        pypath='/bin/python3'
+    }else{
+        console.log('defaulting to: "python"')
+        pypath='python'
+    }
+    const pychild = spawn(pypath, [script, cidade, estado, time_range_start, time_range_end],{
         serialization:'json'
     })
 
